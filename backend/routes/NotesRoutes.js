@@ -39,9 +39,14 @@ res.send({"msg":"you are not authorised"})
 })
 noteRouter.delete("/delete/:noteId",async(req,res)=>{
     const {noteId}=req.params
+    const note=await NoteModel.findOne({_id:noteId})
     try {
-        await NoteModel.findByIdAndDelete({_id:noteId})
+        if(req.body.authorId!==note.authorId ){
+    res.send({"msg":"you are not authorised"})
+        }else{
+            await NoteModel.findByIdAndDelete({_id:noteId},req.body)
         res.send({"msg":`Note with id ${noteId} has been deleted`})
+        }
     } catch (error) {
         res.send({"msg":error.message})
     }
